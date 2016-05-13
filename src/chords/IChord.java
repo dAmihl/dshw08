@@ -5,5 +5,6 @@ package chords;
  *
  */
 public interface IChord {
-
+	public IChord getNextChordToId(Integer Id);
+	public Integer getId();
 }
