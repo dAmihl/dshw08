@@ -16,8 +16,8 @@ public class SimulationChord implements IChord {
 	
 
 	
-	public void connect(SimulationChord knownChord){
-		System.out.println("Connecting node to network using known chord "+knownChord);
+	public void connect(IChord knownChord){
+		System.out.println("Connecting node "+this+" to network using known chord "+knownChord);
 		if (knownChord == null){
 			this.fingerTable.initEmptyRing();
 		}else{
@@ -28,20 +28,18 @@ public class SimulationChord implements IChord {
 		
 	}
 	
-	private void fillFingerTable(SimulationChord knownChord){
+	private void fillFingerTable(IChord knownChord){
 		IChord node;
 		int n = this.getId();
 		for (int i = 0; i < BITS_M; i++){
-			int k = (n + 2^(i))%(2^BITS_M);
-			if ((node = ChordSimulation.simulatePing(k)) != null){
-				this.fingerTable.setKey(k, node);
-			}else{
-				k = (k+1)%(2^BITS_M);
-				while ((node = ChordSimulation.simulatePing(k)) == null){
-					k = (k+1)%(2^BITS_M);
-				}
+			int k = (int) ((n + 2^(i))%Math.pow(2,BITS_M));
+
+			while ((node = ChordSimulation.simulatePing(k)) == null){
+				k = (int) ((k+1)%Math.pow(2,BITS_M));
 			}
+			this.fingerTable.setKey(i, node);
 		}
+		
 	}
 	
 	public FingerTable getFingerTable(){
@@ -63,6 +61,11 @@ public class SimulationChord implements IChord {
 	@Override
 	public Integer getId() {
 		return this.ID;
+	}
+	
+	@Override
+	public String toString() {
+		return "Node("+this.ID+")";
 	}
 	
 }

@@ -1,5 +1,6 @@
 package chords.simulation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import chords.IChord;
@@ -20,6 +21,7 @@ public class ChordSimulation {
 	
 	private void simulateFirstNetwork(){
 		ADDRESS_BITS_M = 5;
+		SIMULATED_NETWORK = new HashMap<>();
 		SimulationChord n1 = new SimulationChord(1, ADDRESS_BITS_M);
 		SimulationChord n2 = new SimulationChord(3, ADDRESS_BITS_M);
 		SimulationChord n3 = new SimulationChord(7, ADDRESS_BITS_M);
@@ -29,7 +31,7 @@ public class ChordSimulation {
 		SimulationChord n7 = new SimulationChord(19, ADDRESS_BITS_M);
 		SimulationChord n8 = new SimulationChord(25, ADDRESS_BITS_M);
 		SimulationChord n9 = new SimulationChord(27, ADDRESS_BITS_M);
-		SIMULATED_NETWORK.put(n1.getId(), n1);
+		/*SIMULATED_NETWORK.put(n1.getId(), n1);
 		SIMULATED_NETWORK.put(n2.getId(), n2);
 		SIMULATED_NETWORK.put(n3.getId(), n3);
 		SIMULATED_NETWORK.put(n4.getId(), n4);
@@ -37,8 +39,21 @@ public class ChordSimulation {
 		SIMULATED_NETWORK.put(n6.getId(), n6);
 		SIMULATED_NETWORK.put(n7.getId(), n7);
 		SIMULATED_NETWORK.put(n8.getId(), n8);
-		SIMULATED_NETWORK.put(n9.getId(), n9);
+		SIMULATED_NETWORK.put(n9.getId(), n9);*/
+		connectNode(n1, null);
+		connectNode(n7, n1);
+		connectNode(n3, n1);
+		connectNode(n9, n1);
+		connectNode(n2, n1);
+		connectNode(n6, n1);
+		connectNode(n4, n1);
+		connectNode(n5, n1);
 		
+	}
+	
+	private void connectNode(IChord node, IChord knownNode){
+		SIMULATED_NETWORK.put(node.getId(), node);
+		node.connect(knownNode);
 	}
 	
 	private void simulateSecondNetwork(){
