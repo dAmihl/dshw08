@@ -15,7 +15,7 @@ public class ChordSimulation {
 	
 	private void createNetwork(){
 		for (int i = 0; i < NUMBER_NODES_IN_SIM; i++){
-			Chord tmpChord = new Chord(i);
+			Chord tmpChord = new Chord(i, ADDRESS_BITS_M);
 		}
 	}
 	
