@@ -48,7 +48,16 @@ public class ChordSimulation {
 		connectNode(n6, n1);
 		connectNode(n4, n1);
 		connectNode(n5, n1);
+		connectNode(n8, n1);
 		
+		System.out.println("All nodes connected to network. Printing info..");
+		for (IChord n: SIMULATED_NETWORK.values()){
+			System.out.println(n.getInfoText());
+			System.out.println("\n\n");
+		}
+		
+		System.out.println("Sending message from 25 to 8");
+		n8.sendMessage("Hello number 8", 8);
 	}
 	
 	private void connectNode(IChord node, IChord knownNode){
@@ -65,6 +74,13 @@ public class ChordSimulation {
 			return SIMULATED_NETWORK.get(toId);
 		}else{
 			return null;
+		}
+	}
+	
+	public static void simulateBroadcastAnnouncement(IChord sender){
+		System.out.println("Announcement broadcast sent.");
+		for (IChord node : SIMULATED_NETWORK.values()){
+			node.announceNewNode(sender);
 		}
 	}
 	

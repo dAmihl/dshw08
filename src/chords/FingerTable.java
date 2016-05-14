@@ -52,7 +52,7 @@ public class FingerTable {
 	public String toString() {
 		String out = "";
 		out += "Successor: "+this.getSuccessor()+" \n";
-		out += "Predecessor: "+this.getSuccessor()+"\n";
+		out += "Predecessor: "+this.getPredecessor()+"\n";
 		out += "| key | node |\n";
 		for (int i = 0; i < this.size; i++){
 			out += "| "+(i+1)+" | "+this.table[i]+" |\n";
@@ -79,5 +79,15 @@ public class FingerTable {
 	
 	public void setPredecessor(IChord newPred){
 		this.predecessor = newPred;
+	}
+	
+	public IChord getNearestSmallerChord(Integer Id){
+		IChord maxSmallerChord = this.table[0];
+		for (int i = 1; i < this.size; i++){
+			if (this.table[i].getId() > maxSmallerChord.getId() && this.table[i].getId() < Id){
+				maxSmallerChord = table[i];
+			}
+		}
+		return maxSmallerChord;
 	}
 }

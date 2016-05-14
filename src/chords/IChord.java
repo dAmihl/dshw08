@@ -11,4 +11,7 @@ public interface IChord {
 	public void announceNewNode(IChord node);
 	public IChord getPredecessor();
 	public IChord getSuccessor();
+	public String getInfoText();
+	public IChord sendMessageToChord(String msg, Integer key);
+	public void sendMessage(String msg, Integer key);
 }

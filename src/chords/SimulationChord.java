@@ -25,16 +25,17 @@ public class SimulationChord implements IChord {
 			IChord oldPredecessor = nextChord.getPredecessor();
 			this.fingerTable.setPredecessor(oldPredecessor);
 			this.fingerTable.setSuccessor(nextChord);
-			this.fingerTable.getSuccessor().announceNewNode(this);
-			this.fingerTable.getPredecessor().announceNewNode(this);
-			fillFingerTable(knownChord);
+			//this.fingerTable.getSuccessor().announceNewNode(this);
+			//this.fingerTable.getPredecessor().announceNewNode(this);
+			startNewNodeAnnouncementBroadcast();
+			fillFingerTable();
 		}
 		System.out.println("Connected. FingerTable: ");
 		System.out.println(this.fingerTable);
 		
 	}
 	
-	private void fillFingerTable(IChord knownChord){
+	private void fillFingerTable(){
 		IChord node;
 		int n = this.getId();
 		for (int i = 0; i < BITS_M; i++){
@@ -77,11 +78,16 @@ public class SimulationChord implements IChord {
 
 	@Override
 	public void announceNewNode(IChord node) {
-		if (this.getId() < node.getId() && this.fingerTable.getSuccessor().getId() > node.getId()){
+		if (node == this) return;
+		
+		if (this.getId() < node.getId() && this.fingerTable.getSuccessor().getId() > node.getId() ||
+				this.getSuccessor() == this){
 			this.fingerTable.setSuccessor(node);
-		}else if (this.getId() > node.getId() && node.getId() > this.fingerTable.getPredecessor().getId()){
+		}else if (this.getId() > node.getId() && node.getId() > this.fingerTable.getPredecessor().getId() ||
+				this.getPredecessor() == this){
 			this.fingerTable.setPredecessor(node);
 		}
+		fillFingerTable();
 			
 	}
 
@@ -97,6 +103,42 @@ public class SimulationChord implements IChord {
 	@Override
 	public IChord getSuccessor() {
 		return this.fingerTable.getSuccessor();
+	}
+	
+	private void startNewNodeAnnouncementBroadcast(){
+		ChordSimulation.simulateBroadcastAnnouncement(this);
+	}
+
+
+
+	@Override
+	public String getInfoText() {
+		return this.toString() + "\n" + this.getFingerTable()+"\n";
+	}
+
+
+
+	@Override
+	public IChord sendMessageToChord(String msg, Integer key) {
+		if (key == this.getId()){
+			System.out.println(this.toString()+" Received Message: "+msg);
+			return null;
+		}else{
+			System.out.println(this.toString()+" Received Message to other chord. Responding nearest chord in my fingertable.");
+			IChord nearestChord = this.fingerTable.getNearestSmallerChord(key);
+			return nearestChord;
+		}	
+	}
+	
+	@Override
+	public void sendMessage(String msg, Integer key){
+		IChord nearestChord = this.fingerTable.getNearestSmallerChord(key);
+		IChord nextChord = null;
+		while ((nextChord = nearestChord.sendMessageToChord(msg, key)) != null){
+			nearestChord = nextChord;
+			System.out.println("Message not sent yet. Got next chord: "+nearestChord);
+		}
+		System.out.println(this.toString()+" successfully sent message.");
 	}
 	
 }
