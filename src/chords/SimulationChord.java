@@ -21,6 +21,12 @@ public class SimulationChord implements IChord {
 		if (knownChord == null){
 			this.fingerTable.initEmptyRing();
 		}else{
+			IChord nextChord = knownChord.getNextChordToId(this.getId());
+			IChord oldPredecessor = nextChord.getPredecessor();
+			this.fingerTable.setPredecessor(oldPredecessor);
+			this.fingerTable.setSuccessor(nextChord);
+			this.fingerTable.getSuccessor().announceNewNode(this);
+			this.fingerTable.getPredecessor().announceNewNode(this);
 			fillFingerTable(knownChord);
 		}
 		System.out.println("Connected. FingerTable: ");
@@ -32,7 +38,7 @@ public class SimulationChord implements IChord {
 		IChord node;
 		int n = this.getId();
 		for (int i = 0; i < BITS_M; i++){
-			int k = (int) ((n + 2^(i))%Math.pow(2,BITS_M));
+			int k = (int) ((n + Math.pow(2, i))%Math.pow(2,BITS_M));
 
 			while ((node = ChordSimulation.simulatePing(k)) == null){
 				k = (int) ((k+1)%Math.pow(2,BITS_M));
@@ -51,9 +57,8 @@ public class SimulationChord implements IChord {
 
 
 	@Override
-	public SimulationChord getNextChordToId(Integer Id) {
-		
-		return this;
+	public IChord getNextChordToId(Integer Id) {	
+		return this.fingerTable.getNextChordToId(Id);
 	}
 
 
@@ -66,6 +71,32 @@ public class SimulationChord implements IChord {
 	@Override
 	public String toString() {
 		return "Node("+this.ID+")";
+	}
+
+
+
+	@Override
+	public void announceNewNode(IChord node) {
+		if (this.getId() < node.getId() && this.fingerTable.getSuccessor().getId() > node.getId()){
+			this.fingerTable.setSuccessor(node);
+		}else if (this.getId() > node.getId() && node.getId() > this.fingerTable.getPredecessor().getId()){
+			this.fingerTable.setPredecessor(node);
+		}
+			
+	}
+
+
+
+	@Override
+	public IChord getPredecessor() {
+		return this.fingerTable.getPredecessor();
+	}
+
+
+
+	@Override
+	public IChord getSuccessor() {
+		return this.fingerTable.getSuccessor();
 	}
 	
 }
