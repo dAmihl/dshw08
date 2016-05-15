@@ -2,6 +2,7 @@ package chords.simulation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import chords.IChord;
 import chords.SimulationChord;
@@ -17,6 +18,7 @@ public class ChordSimulation {
 	public void startSimulation(){
 		System.out.println("Chord simulation starting..");
 		simulateFirstNetwork();
+		simulateSecondNetwork();
 	}
 	
 	private void simulateFirstNetwork(){
@@ -31,15 +33,7 @@ public class ChordSimulation {
 		SimulationChord n7 = new SimulationChord(19, ADDRESS_BITS_M);
 		SimulationChord n8 = new SimulationChord(25, ADDRESS_BITS_M);
 		SimulationChord n9 = new SimulationChord(27, ADDRESS_BITS_M);
-		/*SIMULATED_NETWORK.put(n1.getId(), n1);
-		SIMULATED_NETWORK.put(n2.getId(), n2);
-		SIMULATED_NETWORK.put(n3.getId(), n3);
-		SIMULATED_NETWORK.put(n4.getId(), n4);
-		SIMULATED_NETWORK.put(n5.getId(), n5);
-		SIMULATED_NETWORK.put(n6.getId(), n6);
-		SIMULATED_NETWORK.put(n7.getId(), n7);
-		SIMULATED_NETWORK.put(n8.getId(), n8);
-		SIMULATED_NETWORK.put(n9.getId(), n9);*/
+	
 		connectNode(n1, null);
 		connectNode(n7, n1);
 		connectNode(n3, n1);
@@ -66,7 +60,63 @@ public class ChordSimulation {
 	}
 	
 	private void simulateSecondNetwork(){
+		SIMULATED_NETWORK.clear();
+		ADDRESS_BITS_M = 12;
 		
+		int numAddresses = (int) Math.pow(2, ADDRESS_BITS_M);
+		
+		IChord firstNodeInNetwork = new SimulationChord(0, ADDRESS_BITS_M);
+		connectNode(firstNodeInNetwork, null);
+		
+		// Initiating network
+		System.out.println("Starting randomly distributing nodes with m = "+ADDRESS_BITS_M+".");
+		int nextAddress = 0;
+		for (int i = 0; i < NUMBER_NODES_IN_SIM; i++){
+			do {
+				nextAddress = new Random().nextInt(numAddresses);
+			}while (SIMULATED_NETWORK.containsKey(nextAddress));
+			
+			IChord newNode = new SimulationChord(nextAddress, ADDRESS_BITS_M);
+			connectNode(newNode, firstNodeInNetwork);
+			System.out.println("Node with Id "+newNode.getId()+" connected.");
+		}
+		
+		System.out.println("Network initialized. Sending messages now..");
+		
+		// Sending messages
+		
+		double numMessages = 0;
+		double allHops = 0; 
+		double minHops = -1;
+		double maxHops = -1;
+		
+		for(IChord c : SIMULATED_NETWORK.values()){
+			SimulationChord msgFrom = (SimulationChord) c;
+			for (IChord d: SIMULATED_NETWORK.values()){
+				if (c == d) break;
+				SimulationChord msgTo = (SimulationChord) d;
+				int hops = msgFrom.sendMessageRecordHops("Couting hops", msgTo.getId());
+				allHops += hops;
+				numMessages++;
+				
+				if (minHops == -1){
+					minHops = hops;
+				}else if (hops < minHops){
+					minHops = hops;
+				}
+				
+				if (maxHops == -1){
+					maxHops = hops;
+				}else if (hops > maxHops){
+					maxHops = hops;
+				}	
+			}
+		}
+		System.out.println("Messages sent:");
+		System.out.println("MinHops: "+minHops);
+		System.out.println("MaxHops: "+maxHops);
+		double average = allHops/numMessages;
+		System.out.println("Average Hops: "+average);
 	}
 	
 	public static IChord simulatePing(Integer toId){

@@ -14,4 +14,5 @@ public interface IChord {
 	public String getInfoText();
 	public IChord sendMessageToChord(String msg, Integer key);
 	public void sendMessage(String msg, Integer key);
+	
 }

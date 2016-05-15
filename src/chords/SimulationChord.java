@@ -134,11 +134,26 @@ public class SimulationChord implements IChord {
 	public void sendMessage(String msg, Integer key){
 		IChord nearestChord = this.fingerTable.getNearestSmallerChord(key);
 		IChord nextChord = null;
+		int numHops = 1;
 		while ((nextChord = nearestChord.sendMessageToChord(msg, key)) != null){
 			nearestChord = nextChord;
 			System.out.println("Message not sent yet. Got next chord: "+nearestChord);
+			numHops++;
 		}
-		System.out.println(this.toString()+" successfully sent message.");
+		System.out.println(this.toString()+" successfully sent message. NumHops: "+numHops);
+	}
+	
+	public Integer sendMessageRecordHops(String msg, Integer key){
+		IChord nearestChord = this.fingerTable.getNearestSmallerChord(key);
+		IChord nextChord = null;
+		int numHops = 1;
+		while ((nextChord = nearestChord.sendMessageToChord(msg, key)) != null){
+			nearestChord = nextChord;
+			System.out.println("Message not sent yet. Got next chord: "+nearestChord);
+			numHops++;
+		}
+		System.out.println(this.toString()+" successfully sent message. NumHops: "+numHops);
+		return numHops;
 	}
 	
 }
